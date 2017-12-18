@@ -4,10 +4,12 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -40,7 +42,7 @@ public class ApiController {
 		// "name":"Jim","rollNumber":11,"halfYearlyMarks":60,"attendancePercentage":89,"assigmentsCount":2,"internalExamMarks":89,"result":"Pass"
 		try {
 			if (StringUtils.isNotEmpty(studentJsonString)) {
-				JSONObject student = JsonUtil.getJsonObject(studentJsonString);
+				JSONObject student = new JSONObject(studentJsonString);
 				String name = student.getString("name");
 				int rollNumber = student.getInt("rollNumber");
 				int halfYearlyMarks = student.getInt("halfYearlyMarks");
@@ -50,13 +52,12 @@ public class ApiController {
 
 				Student s = new Student(name, rollNumber, halfYearlyMarks, attendancePercentage, assigmentsCount,
 						internalExamMarks, ApplicationConstants.UNKNOWN_STATUS);
-				
-				
-				
+
 				System.out.println(s);
 			} else {
 				status = "INVALID_INPUT";
 			}
+			status = "PASS";
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
@@ -64,14 +65,29 @@ public class ApiController {
 		return status;
 	}
 
+	@GET
+	@Path("/train")
+	public String train() {
+
+		return "Training initiated";
+	}
+
 	// Visualization API's
 	@GET
 	@Path("/pieChartData")
-	// @Produces(MediaType.APPLICATION_JSON)
-	public String getFilesList(@Context HttpHeaders headers) {
-		logger.info("START - UIServicesControllerV1.getFilesList , GET  - files\n");
+	@Produces(MediaType.APPLICATION_JSON)
+	public String getPieChartData(@Context HttpHeaders headers) {
 
-		return "aa";// JsonUtil.convertObjectToString("");
+		return "pie data";
+	}
+
+
+	@GET
+	@Path("/tabularData/{param}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String getTabularData(@PathParam("param") String resultStatus) {
+
+		return "table data";
 	}
 
 }

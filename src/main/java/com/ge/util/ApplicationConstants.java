@@ -11,7 +11,11 @@ public class ApplicationConstants {
 	public static final String PASS = "Pass";
 	public static final String FAIL = "fail";
 	public static final String UNKNOWN_STATUS = "Result unknown";
-
+	public static final String POST = "POST";
 	
-
+	public static final String PREDICTIONIO_URL = "aa";
+	
+	public static final String POSTGRES_JDBC_CLASS = "org.postgresql.Driver";
+	public static final String POSTGRES_JDBC_URL = "jdbc:postgresql://localhost:5432/pio_poc";
+	public static final String PREDICTED_RESULT_TABLE = "predicted_result";
 }
