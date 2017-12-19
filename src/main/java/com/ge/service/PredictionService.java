@@ -1,89 +1,67 @@
 package com.ge.service;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.Calendar;
+import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
+import com.ge.db.PredictedResultDao;
 import com.ge.pojo.Student;
 import com.ge.util.ApplicationConstants;
+import com.ge.util.JsonUtil;
+import com.ge.util.RestInvoker;
 
 public class PredictionService {
 
 	final static Logger logger = Logger.getLogger(PredictionService.class);
 
-	protected String predictStudentResult(Student student) {
+	public String predictStudentResult(Student student) {
 
 		String studentQueryString = getAttributeJson(student);
+		String predictedResult = "";
 
-		//RestInvoker restInvoker = new RestInvoker();
-		//String result = restInvoker.postData(studentQueryString);
-		String predictedResult = "PASS";
-		student.setResult(predictedResult);
-		
-		
-		// save this to db
-		boolean insertStatus = insertPredictedResult(student);
-
-		return predictedResult;
-	}
-
-	protected boolean insertPredictedResult(Student student) {
-		Connection connection = null;
-		Statement statement = null;
-		PreparedStatement preparedStatement = null;
-		boolean status = false;
 		try {
-			Class.forName(ApplicationConstants.POSTGRES_JDBC_CLASS);
-			connection = DriverManager.getConnection(ApplicationConstants.POSTGRES_JDBC_URL, "piopoc", "piopoc");
 
-			statement = connection.createStatement();
-		    Calendar calendar = Calendar.getInstance();
+			RestInvoker restInvoker = new RestInvoker();
 
-		    java.sql.Timestamp timeStamp = new java.sql.Timestamp(calendar.getTime().getTime());
+			String result = restInvoker.postData(studentQueryString);
 
-		    
-		    String sqlQuery = "INSERT INTO predicted_result (created_at,roll_no,name,half_yearly_marks,attendance_percentage,internal_exam_marks,assignment_count,result)"
-		    		+ " VALUES (?,?,?,?,?,?,?,?)";
-		    preparedStatement = connection.prepareStatement(sqlQuery);
-		    preparedStatement.setTimestamp(1, timeStamp);
-		    preparedStatement.setInt(2, student.getRollNumber());
-		    preparedStatement.setString(3, student.getName());
-		    preparedStatement.setInt(4, student.getHalfYearlyMarks());
-		    preparedStatement.setInt(5, student.getAttendancePercentage());
-		    preparedStatement.setInt(6, student.getInternalExamMarks());
-		    preparedStatement.setInt(7, student.getAssigmentsCount());
-		    preparedStatement.setString(8, student.getResult());
+			// Parse the result json. and pick up the result value
 
-		    preparedStatement.setString(3, student.getName());
+			JSONObject resultJson = new JSONObject(result);
+			double label = resultJson.getDouble("label");
+			
+			predictedResult = label > 0 ? ApplicationConstants.PASS : ApplicationConstants.FAIL;
 
-		    preparedStatement.executeUpdate();
-		    preparedStatement.close();
-		    
-			/*String sql = "INSERT INTO predicted_result (roll_no,name,half_yearly_marks,attendance_percentage,internal_exam_marks,assignment_count,result) "
-					+ "VALUES (" + student.getRollNumber() + ",'" + student.getName() + "',"
-					+ student.getHalfYearlyMarks() + "," + student.getAttendancePercentage() + ","
-					+ student.getInternalExamMarks() + "," + student.getInternalExamMarks() + ",'" + student.getResult()
-					+ "');";
-			System.out.println(sql);
-			//statement.executeUpdate(sql);*/
-			status = true;
+			//predictedResult = label.equals("1") ? ApplicationConstants.PASS : ApplicationConstants.FAIL;
+
+			student.setResult(predictedResult);
+
+			// save this to db
+			boolean insertStatus = new PredictedResultDao().insertPredictedResult(student);
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 		}
-		
-		return status;
-
+		return predictedResult;
 	}
 
 	public static void main(String[] args) {
 		System.out.println("test");
 		Student s = new Student("Tim1", 3, 11, 22, 33, 44, "PASS");
-		new PredictionService().insertPredictedResult(s);
+		try {
+			// new PredictionService().predictStudentResult(s);
+			String label = "1";
+			String predictedResult = label.equals("1") ? ApplicationConstants.PASS : ApplicationConstants.FAIL;
+			System.out.println(predictedResult);
+			label = "0";
+			predictedResult = label.equals("1") ? ApplicationConstants.PASS : ApplicationConstants.FAIL;
+			System.out.println(predictedResult);
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	static String getAttributeJson(Student student) {

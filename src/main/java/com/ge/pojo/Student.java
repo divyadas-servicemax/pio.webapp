@@ -12,18 +12,18 @@ public class Student {
 	int rollNumber;
 	int halfYearlyMarks;
 	int attendancePercentage;
-	int assigmentsCount;
+	int assignmentCount;
 	int internalExamMarks;
 	String result;
 
-	public Student(String name, int rollNumber, int halfYearlyMarks, int attendancePercentage, int assigmentsCount,
+	public Student(String name, int rollNumber, int halfYearlyMarks, int attendancePercentage, int assignmentCount,
 			int internalExamMarks, String result) {
 		super();
 		this.name = name;
 		this.rollNumber = rollNumber;
 		this.halfYearlyMarks = halfYearlyMarks;
 		this.attendancePercentage = attendancePercentage;
-		this.assigmentsCount = assigmentsCount;
+		this.assignmentCount = assignmentCount;
 		this.internalExamMarks = internalExamMarks;
 		this.result = result;
 	}
@@ -61,11 +61,11 @@ public class Student {
 	}
 
 	public int getAssigmentsCount() {
-		return assigmentsCount;
+		return assignmentCount;
 	}
 
-	public void setAssigmentsCount(int assigmentsCount) {
-		this.assigmentsCount = assigmentsCount;
+	public void setAssigmentsCount(int assignmentCount) {
+		this.assignmentCount = assignmentCount;
 	}
 
 	public int getInternalExamMarks() {
@@ -98,16 +98,6 @@ public class Student {
 		String aa = JsonUtil.convertObjectToString(studentList);
 		System.out.println(aa);
 		
-		PieChart p1 = new PieChart(ApplicationConstants.PASS, 11);
-		PieChart p2 = new PieChart(ApplicationConstants.FAIL, 11);
-		
-		List<PieChart> pieChartList = new ArrayList<>();
-		pieChartList.add(p1);
-		pieChartList.add(p2);
-		
-		String bb = JsonUtil.convertObjectToString(pieChartList);
-		System.out.println(bb);
-		
 		
 
 	}
@@ -115,7 +105,7 @@ public class Student {
 	@Override
 	public String toString() {
 		return "Student [name=" + name + ", rollNumber=" + rollNumber + ", halfYearlyMarks=" + halfYearlyMarks
-				+ ", attendancePercentage=" + attendancePercentage + ", assigmentsCount=" + assigmentsCount
+				+ ", attendancePercentage=" + attendancePercentage + ", assignmentCount=" + assignmentCount
 				+ ", internalExamMarks=" + internalExamMarks + ", result=" + result + "]";
 	}
 

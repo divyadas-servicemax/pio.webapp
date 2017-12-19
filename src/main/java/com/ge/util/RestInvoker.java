@@ -1,9 +1,10 @@
 package com.ge.util;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -46,10 +47,38 @@ public class RestInvoker {
 		try {
 
 			HttpURLConnection conn = service.invokeRestCall(ApplicationConstants.PREDICTIONIO_URL, studentJsonData);
-
+			//String message = conn.getResponseMessage();
+			//System.out.println(message);
 			int responseCode = conn.getResponseCode();
+			
+			BufferedReader in = new BufferedReader(
+			        new InputStreamReader(conn.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+
+			//print result
+			System.out.println(response.toString());
+			
+			result = response.toString();
+			/*BufferedReader br;
+			if (200 <= conn.getResponseCode() && conn.getResponseCode() <= 299) {
+			    br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			} else {
+			    br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+			}
+			String output;
+			StringBuilder sb = new StringBuilder();
+			while ((output = br.readLine()) != null) {
+			sb.append(output);
+			System.out.println(sb.toString());
+			}
 			// Log respective information into logger file
-			if (responseCode == 200) {
+			/*if (responseCode == 200) {
 				logger.info("Successfully called REST endpoint");
 				logger.debug("Simulator POST endpoint response code = " + responseCode + " , response data = "
 						+ conn.getResponseMessage());
@@ -57,12 +86,8 @@ public class RestInvoker {
 				
 				
 				
-			} else {
-				logger.error("Error in inserting data to DB");
-			}
-		} catch (MalformedURLException e) {
-			logger.error(e.getMessage(), e);
-		} catch (IOException e) {
+			}*/
+		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
 		return result;

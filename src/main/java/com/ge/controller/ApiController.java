@@ -16,6 +16,8 @@ import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import com.ge.pojo.Student;
+import com.ge.service.PredictionService;
+import com.ge.service.VisualisationService;
 import com.ge.util.ApplicationConstants;
 import com.ge.util.JsonUtil;
 
@@ -38,7 +40,7 @@ public class ApiController {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String predictStudentResult(String studentJsonString) {
-		String status = "";
+		String predictedResult = "";
 		// "name":"Jim","rollNumber":11,"halfYearlyMarks":60,"attendancePercentage":89,"assigmentsCount":2,"internalExamMarks":89,"result":"Pass"
 		try {
 			if (StringUtils.isNotEmpty(studentJsonString)) {
@@ -50,19 +52,26 @@ public class ApiController {
 				int assigmentsCount = student.getInt("assigmentsCount");
 				int internalExamMarks = student.getInt("internalExamMarks");
 
-				Student s = new Student(name, rollNumber, halfYearlyMarks, attendancePercentage, assigmentsCount,
+				Student studentObject = new Student(name, rollNumber, halfYearlyMarks, attendancePercentage, assigmentsCount,
 						internalExamMarks, ApplicationConstants.UNKNOWN_STATUS);
-
-				System.out.println(s);
+				predictedResult = new PredictionService().predictStudentResult(studentObject);
+				
+				//predictedResult= "PASS";
+				
+				JSONObject resultJson = new JSONObject();
+				resultJson.put("message", predictedResult);
+				predictedResult = resultJson.toString();
+				
+				
 			} else {
-				status = "INVALID_INPUT";
+				predictedResult = "INVALID_INPUT";
 			}
-			status = "PASS";
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
+			predictedResult = "INVALID_INPUT";
 		}
 
-		return status;
+		return predictedResult;
 	}
 
 	@GET
@@ -77,8 +86,8 @@ public class ApiController {
 	@Path("/pieChartData")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String getPieChartData(@Context HttpHeaders headers) {
-
-		return "pie data";
+		String result = new VisualisationService().getPieChartData();
+		return result;
 	}
 
 
@@ -86,8 +95,8 @@ public class ApiController {
 	@Path("/tabularData/{param}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String getTabularData(@PathParam("param") String resultStatus) {
-
-		return "table data";
+		String result = new VisualisationService().getTableData(resultStatus);
+		return result;
 	}
 
 }

@@ -1,30 +1,24 @@
 package com.ge.pojo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PieChart {
 
-	String label;
-	int count;
+	List<PieChartData> values = new ArrayList<>();
 
-	public PieChart(String label, int count) {
+	public PieChart(List<PieChartData> values) {
 		super();
-		this.label = label;
-		this.count = count;
+		this.values = values;
 	}
 
-	public String getLabel() {
-		return label;
+	public List<PieChartData> getValues() {
+		return values;
 	}
 
-	public void setLabel(String label) {
-		this.label = label;
-	}
-
-	public int getCount() {
-		return count;
-	}
-
-	public void setCount(int count) {
-		this.count = count;
+	public void setValues(List<PieChartData> values) {
+		this.values = values;
 	}
 
 }
+

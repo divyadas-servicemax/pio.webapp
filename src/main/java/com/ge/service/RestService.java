@@ -34,16 +34,9 @@ public class RestService {
 
 		logger.info("***  Invoking url - " + urlString);
 
-		// Create all-trusting host name verifier
-		// HostnameVerifier allHostsValid = new HostnameVerifier() {
-		// public boolean verify(String hostname, SSLSession session) {
-		// return true;
-		// }
-		// };
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-		if (conn instanceof HttpsURLConnection) {
+		if (connection instanceof HttpsURLConnection) {
 
 			HttpsURLConnection conn1 = (HttpsURLConnection) url.openConnection();
 
@@ -53,16 +46,15 @@ public class RestService {
 				}
 			});
 
-			conn = conn1;
+			connection = conn1;
 		}
-		conn.setDoOutput(true);
-		conn.setRequestMethod(ApplicationConstants.POST);
-		conn.setRequestProperty("Content-Type", "application/json");
-		conn.setRequestProperty("access_token", "abcd");
-		OutputStream os = conn.getOutputStream();
+		connection.setDoOutput(true);
+		connection.setRequestMethod(ApplicationConstants.POST);
+		connection.setRequestProperty("Content-Type", "application/json");
+		OutputStream os = connection.getOutputStream();
 		os.write(data.getBytes());
 		os.flush();
 
-		return conn;
+		return connection;
 	}
 }
